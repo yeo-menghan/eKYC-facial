@@ -18,17 +18,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-1
 
-      # 1a. Pull Model from S3 (This bypasses .gitignore)
+      # 1a. Pull Model from S3 (Into the api folder)
       - name: Download Model from S3
         run: |
-          mkdir -p model
-          aws s3 cp s3://my-ekyc-assets/models/ekyc/ekyc_liveness_mobilenetv3.onnx ./model/
+          mkdir -p api/model
+          aws s3 cp s3://my-ekyc-assets/models/ekyc/ekyc_liveness_mobilenetv3.onnx ./api/model/
       
-      # 1b. Download the missing MediaPipe face detection model
+      # 1b. Download MediaPipe model (Into the api folder)
       - name: Download MediaPipe Face Model
         run: |
-          mkdir -p model/weights
-          curl -L -o ./model/weights/blaze_face_short_range.tflite https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite
+          mkdir -p api/model/weights
+          curl -L -o ./api/model/weights/blaze_face_short_range.tflite https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite
 
       # 2. Login to ECR
       - name: Login to Amazon ECR
