@@ -18,18 +18,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-1
 
-      # 1a. Pull Model from S3 (Into the api folder)
-      - name: Download Model from S3
+      # 1. Pull All Models from S3 (Into the api/model folder)
+      - name: Download Models from S3
         run: |
           mkdir -p api/model
+          
+          # Download Main Liveness Model
           aws s3 cp s3://my-ekyc-assets/models/ekyc/ekyc_liveness_mobilenetv3.onnx ./api/model/
-      
-      # 1b. Download MediaPipe model (Into the api folder)
-      - name: Download MediaPipe Face Model
-        run: |
-          mkdir -p api/model/weights
-          curl -L -o ./api/model/weights/blaze_face_short_range.tflite https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite
-
+          
+          # Download MediaPipe Face Detector (Now pulled from S3)
+          aws s3 cp s3://my-ekyc-assets/models/ekyc/blaze_face_short_range.tflite ./api/model/
+          
       # 2. Login to ECR
       - name: Login to Amazon ECR
         id: login-ecr

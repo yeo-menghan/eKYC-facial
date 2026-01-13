@@ -5,9 +5,26 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from dataclasses import dataclass, field
 from typing import List, Tuple, Optional, Dict
+from dataclasses import dataclass
 
-# Import constants from root
-from CONSTANTS import QualityThresholds
+@dataclass(frozen=True)
+class QualityThresholds:
+    # Image Quality
+    BLUR_LAPLACIAN_VAR: float = 300.0
+    MIN_BRIGHTNESS: float = 40.0
+    MAX_BRIGHTNESS: float = 230.0
+    
+    # Face Geometry
+    MIN_FACE_AREA_RATIO: float = 0.1
+    MIN_DETECTION_CONFIDENCE: float = 0.5
+    
+    # Paths
+    FACE_DETECTOR_MODEL_PATH: str = "model/blaze_face_short_range.tflite"
+
+@dataclass(frozen=True)
+class ModelConfigs:
+    LIVENESS_INPUT_SIZE: int = 224
+    BATCH_SIZE: int = 32
 
 @dataclass
 class QualityResult:
@@ -45,7 +62,7 @@ class ImageQualityGate:
         blur_score = float(cv2.Laplacian(gray, cv2.CV_64F).var())
         scores["blur_variance"] = round(blur_score, 2)
         # Note: Logic fixed here (fail if score < threshold)
-        if blur_score > self.t.BLUR_LAPLACIAN_VAR:
+        if blur_score < self.t.BLUR_LAPLACIAN_VAR:
             reasons.append("Image blurry")
 
         # 3. Face Detection & Size Check

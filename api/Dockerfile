@@ -13,7 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy source code
 COPY api/ ./api
 COPY quality/ ./quality
-COPY CONSTANTS.py .
 
 # Copy model downloaded by CI/CD
 RUN mkdir -p /app/model
