@@ -1,0 +1,21 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./model:/app/model
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://backend:8000/v1/liveness
+    # Add these lines to prevent WebSocket timeouts which can break the camera
+    stdin_open: true
+    tty: true

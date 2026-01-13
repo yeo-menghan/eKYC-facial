@@ -1,0 +1,68 @@
+name: Production eKYC Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
+
+      # 1. Pull Model from S3 (This bypasses .gitignore)
+      - name: Download Model from S3
+        run: |
+          mkdir -p model
+          aws s3 cp s3://my-ekyc-assets/models/ekyc/ekyc_liveness_mobilenetv3.onnx ./model/
+
+      # 2. Login to ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # 3. Build & Push Backend (Model included)
+      - name: Build Backend
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/ekyc-backend:latest -f api/Dockerfile .
+          docker push $ECR_REGISTRY/ekyc-backend:latest
+
+      # 4. Build & Push Frontend
+      - name: Build Frontend
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/ekyc-frontend:latest -f frontend/Dockerfile ./frontend
+          docker push $ECR_REGISTRY/ekyc-frontend:latest
+
+      # 5. Remote Deploy via SSH
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 1. Login to ECR
+            aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 556565901230.dkr.ecr.ap-southeast-1.amazonaws.com
+            
+            # 2. Go to project folder
+            cd ~/eKYC-facial
+            
+            # 3. Create/Overwrite the .env file with the Public IP
+            # We use http because we haven't set up SSL yet
+            echo "API_URL=http://${{ secrets.EC2_HOST }}:8000" > .env
+            
+            # 4. Pull and Start
+            docker compose pull
+            docker compose up -d

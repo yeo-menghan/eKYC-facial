@@ -1,21 +1,14 @@
 services:
   backend:
-    build:
-      context: .
-      dockerfile: api/Dockerfile
+    image: 556565901230.dkr.ecr.ap-southeast-1.amazonaws.com/ekyc-backend:latest
     ports:
       - "8000:8000"
-    volumes:
-      - ./model:/app/model
+    restart: always
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: 556565901230.dkr.ecr.ap-southeast-1.amazonaws.com/ekyc-frontend:latest
     ports:
       - "8501:8501"
     environment:
-      - API_URL=http://backend:8000/v1/liveness
-    # Add these lines to prevent WebSocket timeouts which can break the camera
-    stdin_open: true
-    tty: true
+      - API_URL=${API_URL}
+    restart: always
