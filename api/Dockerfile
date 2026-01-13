@@ -17,7 +17,7 @@ COPY CONSTANTS.py .
 
 # Copy model downloaded by CI/CD
 RUN mkdir -p /app/model
-COPY model/ekyc_liveness_mobilenetv3.onnx /app/model/
+COPY model/ /app/model/
 
 ENV PYTHONPATH=/app
 EXPOSE 8000
