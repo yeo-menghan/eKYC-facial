@@ -93,5 +93,6 @@ jobs:
             IMAGE_TAG=${IMAGE_TAG}
             EOF
 
+            docker system prune -af --volumes || true
             docker compose pull
             docker compose up -d --force-recreate

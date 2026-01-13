@@ -3,7 +3,11 @@ import requests
 import os
 
 # Configuration
-API_URL = os.getenv("API_URL", "http://localhost:8000/v1/liveness")
+API_BASE_URL = os.getenv("API_URL", "http://localhost:8000")
+
+def build_url(endpoint: str):
+    return f"{API_BASE_URL.rstrip('/')}/{endpoint.lstrip('/')}"
+
 
 st.set_page_config(page_title="eKYC Liveness Portal", page_icon="🛡️", layout="wide")
 
@@ -49,11 +53,14 @@ with col_res:
         # Trigger inference only if we haven't already or if it's a new file
         with st.spinner("Analyzing..."):
             try:
+                url = build_url("v1/liveness") 
+
                 files = {"file": (img_file.name, img_file.getvalue(), img_file.type)}
                 params = {"enable_checks": enable_checks}
-                
-                response = requests.post(API_URL, files=files, params=params)
+
+                response = requests.post(url, files=files, params=params)
                 response.raise_for_status()
+
                 st.session_state.api_result = response.json()
             except Exception as e:
                 st.error(f"Backend Error: {e}")
