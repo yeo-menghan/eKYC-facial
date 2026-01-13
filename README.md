@@ -70,6 +70,22 @@ facial-ekyc-system/
 └── requirements.txt
 ```
 
+### Running individual components
+
+Run calibration for the quality checks:
+```bash
+python -m quality.calibration
+```
+Utilise the calibration results to suit your camera's needs
+
+Run application
+```bash
+# First terminal - backend
+python -m api.app
+# Second terminal - streamlit frontend
+streamlit run frontend/app.py
+```
+
 ## Image Quality Assessment (Input Gating)
 
 Purpose: Reject bad inputs before ML inference (industry best practice).
@@ -199,3 +215,4 @@ Model Export & Optimization
 - [ ] Temporal liveness
 - [ ] Model distillation
 - [ ] VLM-based cues
+

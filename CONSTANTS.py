@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class QualityThresholds:
     # Image Quality
-    BLUR_LAPLACIAN_VAR: float = 100.0
+    BLUR_LAPLACIAN_VAR: float = 830.0
     MIN_BRIGHTNESS: float = 40.0
     MAX_BRIGHTNESS: float = 230.0
     
