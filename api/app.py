@@ -40,6 +40,13 @@ def preprocess(image_bytes):
     img_np = img_np.transpose(2, 0, 1)[np.newaxis, :].astype(np.float32)
     return img_np
 
+@app.get("/")
+def health(enable_checks: bool = False):
+    return {
+        "status": "ok",
+        "checks_enabled": enable_checks
+    }
+
 @app.post("/v1/liveness")
 async def check_liveness(
     file: UploadFile = File(...),
