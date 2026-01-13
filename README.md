@@ -85,6 +85,12 @@ Additionally check for:
 - Eye Occlusion: Detect if the user is wearing heavy sunglasses (standard eKYC requirement).
 - Library Suggestion: Use Mediapipe for the quality gate. It’s incredibly fast on CPU and gives you 3D landmarks to calculate head tilt and eye opening ratios easily.
 
+Run file:
+```bash
+python -m quality.checks
+```
+
+Results:
 ```bash
 {
   "quality_pass": true,
@@ -105,6 +111,15 @@ Model
 - Input: cropped face
 - Output: liveness probability
 
+Feature,MobileNetV3 (Small/Large),YOLO-n (Nano variants)
+Primary Task,Image Classification (Live vs. Spoof),Object Detection (Finding & naming boxes)
+Architecture,"Optimized for 1:1 classification. Efficient ""Depthwise Separable Convolutions.""","Optimized for ""Dense Prediction"" (detecting many objects at once)."
+Overhead,Extremely Low. Just a backbone and a tiny head.,"High. Includes ""Neck"" (FPN/PAN) and ""Heads"" for box regression and masking."
+Deployment,Perfect for AWS Lambda or basic EC2 CPUs.,Better on GPUs; higher memory/compute footprint for the same input size.
+Input Focus,Looks at the entire cropped face for global texture/noise cues.,"Focused on localizing edges to draw boxes, which can miss subtle global moiré patterns."
+
+Using YOLO for liveness is "overkill"—you are paying for box-drawing logic you don't need. MobileNet gives you higher classification precision with a fraction of the compute.
+
 Data Augmentation:
 - Blur
 - Compression artifacts
@@ -116,7 +131,10 @@ Metrics
 - False Accept Rate
 
 ### Dataset utilised
-CelebA-Spoof. It contains 600,000+ images with 43 rich attributes, covering various spoof types (print, replay, paper cutouts).
+[CelebA-Spoof](https://github.com/ZhangYuanhan-AI/CelebA-Spoof?tab=readme-ov-file). It contains 600,000+ images with 43 rich attributes, covering various spoof types (print, replay, paper cutouts).
+
+Mini version: https://www.kaggle.com/datasets/phatntse192617/celeba-spoof-mini/data
+
 
 ## Training & Evaluation Pipeline
 
