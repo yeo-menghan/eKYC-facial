@@ -17,6 +17,7 @@ COPY quality/ ./quality
 # Copy model downloaded by CI/CD
 RUN mkdir -p /app/model
 COPY api/model/ /app/model/
+RUN ls -R /app/model/
 
 ENV PYTHONPATH=/app
 EXPOSE 8000

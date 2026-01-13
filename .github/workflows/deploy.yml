@@ -22,13 +22,9 @@ jobs:
       - name: Download Models from S3
         run: |
           mkdir -p api/model
-          
-          # Download Main Liveness Model
           aws s3 cp s3://my-ekyc-assets/models/ekyc/ekyc_liveness_mobilenetv3.onnx ./api/model/
-          
-          # Download MediaPipe Face Detector (Now pulled from S3)
           aws s3 cp s3://my-ekyc-assets/models/ekyc/blaze_face_short_range.tflite ./api/model/
-          
+
       # 2. Login to ECR
       - name: Login to Amazon ECR
         id: login-ecr
@@ -39,7 +35,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker build -t $ECR_REGISTRY/ekyc-backend:latest -f api/Dockerfile .
+          docker build --no-cache -t $ECR_REGISTRY/ekyc-backend:latest -f api/Dockerfile .
           docker push $ECR_REGISTRY/ekyc-backend:latest
 
       # 4. Build & Push Frontend
