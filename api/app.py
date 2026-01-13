@@ -3,12 +3,20 @@ import numpy as np
 import io
 import onnxruntime as ort
 from fastapi import FastAPI, UploadFile, File, Query, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 
 # Assuming your quality gate and constants are in the root or accessible via path
 from quality.checks import ImageQualityGate
 
 app = FastAPI(title="eKYC Liveness API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # In production, replace "*" with your specific domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Load ONNX Session once at startup
 # Ensure path points to your model relative to api/app.py

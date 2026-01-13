@@ -86,6 +86,12 @@ python -m api.app
 streamlit run frontend/app.py
 ```
 
+Using Docker
+```bash
+# Open docker app first
+docker compose up --build
+```
+
 ## Image Quality Assessment (Input Gating)
 
 Purpose: Reject bad inputs before ML inference (industry best practice).

@@ -1,8 +1,9 @@
 import streamlit as st
 import requests
+import os
 
 # Configuration
-API_URL = "http://localhost:8000/v1/liveness"
+API_URL = os.getenv("API_URL", "http://localhost:8000/v1/liveness")
 
 st.set_page_config(page_title="eKYC Liveness Portal", page_icon="🛡️", layout="wide")
 
