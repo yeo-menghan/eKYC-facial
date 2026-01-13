@@ -45,22 +45,38 @@ jobs:
           docker build -t $ECR_REGISTRY/ekyc-frontend:latest -f frontend/Dockerfile ./frontend
           docker push $ECR_REGISTRY/ekyc-frontend:latest
 
-      # 5. Remote Deploy via SSH
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
+      # 5. Copy docker-compose.yml to EC2
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/ubuntu/eKYC-facial/"
+
+      # 6. Remote Deploy via SSH
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0  # Better to use versioned release than @master
+        env:
+          # Define the variables here...
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-southeast-1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          # ...and explicitly list them here to "pass" them to the remote server
+          envs: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION
           script: |
-            # 1. Login to ECR
+            # 1. Login to ECR (Now works because we passed the envs above)
             aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 556565901230.dkr.ecr.ap-southeast-1.amazonaws.com
             
             # 2. Go to project folder
             cd ~/eKYC-facial
             
-            # 3. Create/Overwrite the .env file with the Public IP
-            # We use http because we haven't set up SSL yet
+            # 3. Create/Overwrite the .env file
             echo "API_URL=http://${{ secrets.EC2_HOST }}:8000" > .env
             
             # 4. Pull and Start
