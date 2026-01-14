@@ -9,7 +9,6 @@ Design and deploy a facial identity verification pipeline that:
 
 Link to project: https://project-spoof.yeo-menghan.com
 
-
 ## Architecture
 ```
 Client (image upload)
@@ -440,8 +439,6 @@ Amazon ECR for image registry adn separate frontend / backend images
     - IAM-based authentication
     - Low-latency pulls from EC2
 - Backend and frontend are built and pushed independently, allowing future scaling, iteration or replacement of either service. 
-- Backend exposed on port `8000`
-- Frontend exposed on port `8501`
 
 Environment-based configuration
 - `.env` file is generated dynamically on EC2:

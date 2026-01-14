@@ -13,7 +13,7 @@ st.set_page_config(page_title="eKYC Liveness Portal", page_icon="🛡️", layou
 
 st.warning("""
 **⚠️ Demo Project Disclaimer** This application is a work-in-progress demo. The underlying liveness detection model is still in development, 
-and results may not be accurate or ideal for production use.
+and results may not be accurate or ideal for production use. Suggest placing your face nearer to the camera for better results.
 """)
 
 st.divider()
