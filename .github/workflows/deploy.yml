@@ -89,7 +89,7 @@ jobs:
             cd ~/eKYC-facial
 
             cat > .env <<EOF
-            API_URL=http://${{ secrets.EC2_HOST }}:8000
+            API_URL=http://backend:8000
             IMAGE_TAG=${IMAGE_TAG}
             EOF
 

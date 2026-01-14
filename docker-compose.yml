@@ -1,8 +1,8 @@
 services:
   backend:
     image: 556565901230.dkr.ecr.ap-southeast-1.amazonaws.com/ekyc-backend:${IMAGE_TAG}
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
     restart: always
 
   frontend:
