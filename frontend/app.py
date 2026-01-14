@@ -11,6 +11,13 @@ def build_url(endpoint: str):
 
 st.set_page_config(page_title="eKYC Liveness Portal", page_icon="🛡️", layout="wide")
 
+st.warning("""
+**⚠️ Demo Project Disclaimer** This application is a work-in-progress demo. The underlying liveness detection model is still in development, 
+and results may not be accurate or ideal for production use.
+""")
+
+st.divider()
+
 # --- Initialize Session State ---
 if "api_result" not in st.session_state:
     st.session_state.api_result = None
